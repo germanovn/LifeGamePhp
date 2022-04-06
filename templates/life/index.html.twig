@@ -1,0 +1,106 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Life{% endblock %}
+
+{% block body %}
+    <h1>Игра жизнь шаг {{ step }}</h1>
+
+    <table>
+        <tbody>
+        {% for row in data %}
+            <tr>
+                {% for cell in row %}
+                    <td class="cell cell-{{ cell }}">{{ cell }}</td>
+                {% else %}
+                    <td>Empty</td>
+                {% endfor %}
+            </tr>
+        {% else %}
+            <tr>
+                <td colspan="3">No records found</td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+    <button id="loopBtn">Цикл</button>
+    <form id="form" action="/life/" method="post">
+        <div>
+            <label>
+                <p>Шаг</p>
+                <input id="step" type="number" name="step" value="{{ step }}">
+            </label>
+        </div>
+        <div>
+            <label for="world"><p>Первоначальный мир</p></label>
+            <textarea name="world" id="world" cols="{{ width }}" rows="{{ height + 1 }}">{{ world }}</textarea>
+        </div>
+        <input id="loop" type="hidden" value="{{ loop }}" name="loop">
+        <input type="submit">
+    </form>
+    <style>
+        body {
+            color: #ffffff;
+            font-family: monospace;
+        }
+        table {
+            border-spacing: 0
+        }
+        p {
+            padding: 1rem 0 0;
+            margin: 0;
+        }
+        #world {
+            font-size: 1rem;
+            letter-spacing: .75rem;
+        }
+        .cell {
+            padding-left: .75rem;
+        }
+        .cell-1 {
+            background-color: #fff;
+            color: #fff;
+        }
+        .cell-0 {
+            background-color: #000;
+            color: #000;
+        }
+    </style>
+    <script>
+        let step = {{ step }},
+            loopBtn = document.getElementById('loopBtn'),
+            loopInput = document.getElementById('loop'),
+            stepInput = document.getElementById('step'),
+            formInput = document.getElementById('form'),
+            timeInterval;
+
+
+        stepInput.focus();
+        stepInput.addEventListener('change', e => {
+            formInput.submit();
+        })
+
+        if (loopInput.value === '1') {
+            timeInterval = setTimeout(() => {
+                console.log(step);
+                step++;
+                stepInput.value = step;
+                formInput.submit();
+            }, 300);
+
+            setTimeout(() => {
+                clearInterval(timeInterval);
+            }, 60000);
+        }
+
+        loopBtn.addEventListener('click', e => {
+            clearInterval(timeInterval);
+            if (loopInput.value === '0') {
+                loopInput.value = 1;
+            }
+            else {
+                loopInput.value = 0;
+            }
+            formInput.submit();
+        })
+    </script>
+{% endblock %}
